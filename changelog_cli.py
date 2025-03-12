@@ -8,7 +8,7 @@ API_URL = "https://mintlify-take-home.com/api/message"
 def get_git_commits(n):
     try:
         result = subprocess.run(
-            ["git", "log", f"-n {n}", "--pretty = format:%h %s"], capture_output = True, text = True, check = True)
+            ["git", "log", f"-n {n}", "--pretty=format:%h %s"], capture_output = True, text = True, check = True)
         commits = result.stdout.strip().split("\n")
         return commits
     except subprocess.CalledProcessError:
