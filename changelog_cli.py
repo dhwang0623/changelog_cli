@@ -35,7 +35,7 @@ def request_changelog_from_api(commits):
     if not commits:
         return "No commits found."
     condensed_commits = condense_commits(commits)
-    commits_text = "\n".join(condense_commits)
+    commits_text = "\n".join(condensed_commits)
     payload = {
         "model": "claude-3-5-sonnet-latest",
         "messages": [
