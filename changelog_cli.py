@@ -37,7 +37,9 @@ def generate_changelog(commits):
     try:
         response = requests.post(API_URL, json = payload, headers = headers)
         response.raise_for_status()
-        return response.json().get("message", "No response from API.")
+        response_data = response.json()
+        print("\nAPI Response Debugging: \n", response_data)
+        return response_data.get("message", "No response from API.")
     except requests.exceptions.RequestException as e:
         print(F"Error: API request failed. Details: {e}")
         sys.exit(1)
