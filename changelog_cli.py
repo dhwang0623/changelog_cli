@@ -60,7 +60,7 @@ def request_changelog_from_api(commits):
 
     {commits_text}:
 
-    Please format the changelog usinng Markdown with the following sections:
+    Please format the changelog using Markdown with the following sections:
     -**New Features** (for new functionality)
     -**Improvements** (for enhancements and general improvements)
     -**Deprecations** (for removed features)
@@ -70,7 +70,7 @@ def request_changelog_from_api(commits):
     Ensure each section is clear and concise, using bullet points and commit references where it is relevant. 
     If a section does not apply, omit it from the changelog.
     """
-    
+
     payload = {
         "model": "claude-3-5-sonnet-latest",
         "messages": [
