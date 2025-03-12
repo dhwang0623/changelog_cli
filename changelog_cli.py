@@ -14,6 +14,9 @@ API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRhbmllbGh3YW5nMDYy
 API_URL = "https://mintlify-take-home.com/api/message"
 
 def is_git_repo():
+    """
+    Checks if the current directory is a Git repository, preventing errors if the script is ran in a non-Git directory.
+    """
     try:
         subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], check = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         return True
@@ -21,6 +24,9 @@ def is_git_repo():
         return False
 
 def fetch_git_commits(n):
+    """
+    Retrieves the last n commits from the Git repository.
+    """
     try:
         result = subprocess.run(
             ["git", "log", f"-n {n}", "--pretty=format:%h %s"], capture_output = True, text = True, check = True)
@@ -34,12 +40,18 @@ def fetch_git_commits(n):
         sys.exit(1)
 
 def condense_commits(commits):
+    """
+    If there are more than 50 commits, group them into sets of 5 for better readability and reduces API token usage.
+    """
     if len(commits) > 50:
         grouped_commits = [f"{i // 5 + 1}. {', '.join(commits[i: i + 5])}" for i in range(0, len(commits), 5)]
         return grouped_commits
     return commits
 
 def request_changelog_from_api(commits):
+    """
+    Sends the commit messages to the Mintlify API and retrieves the formatted changelog.
+    """
     if not commits:
         return "No commits found."
     condensed_commits = condense_commits(commits)
@@ -71,6 +83,9 @@ def request_changelog_from_api(commits):
         sys.exit(1)
 
 def main():
+    """
+    Handles the CLI arguments and executes the script.
+    """
     if not is_git_repo():
         print("Error: This script must be ran in a Git repository.")
         sys.exit(1)
