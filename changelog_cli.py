@@ -20,7 +20,7 @@ def generate_changelog(commits):
         return "No commits found."
     commits_text = "\n".join(commits)
     payload = {
-        "model": "claude-3.5-sonnet-latest",
+        "model": "claude-3-5-sonnet-latest",
         "messages": [
             {
                 "role": "user",
