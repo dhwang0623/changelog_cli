@@ -18,12 +18,22 @@ def get_git_commits(n):
 def generate_changelog(commits):
     if not commits:
         return "No commits found."
-    prompt = "Please generate a user-friendly changelog for the following Git commit messages: \n" + "\n".join(commits)
+    commits_text = "\n".join(commits)
+    payload = {
+        "model": "claude-3.5-sonnet-latest",
+        "messages": [
+            {
+                "role": "user",
+                "content": f"Based on the provided git log, generate me a changelog:\n{commits_text}"
+            }
+        ], 
+        "max_tokens": 4096,
+        "temperature": 0.5
+    }
     headers = {
-        "X-API-KEY": API_KEY,
+        "X-API-Key": API_KEY,
         "Content-Type": "application/json"
     }
-    payload = {"prompt": prompt}
     try:
         response = requests.post(API_URL, json = payload, headers = headers)
         response.raise_for_status()
