@@ -56,12 +56,27 @@ def request_changelog_from_api(commits):
         return "No commits found."
     condensed_commits = condense_commits(commits)
     commits_text = "\n".join(condensed_commits)
+    prompt = f"""Generate a structured changelog based on the following commit messages:
+
+    {commits_text}:
+
+    Please format the changelog usinng Markdown with the following sections:
+    -**New Features** (for new functionality)
+    -**Improvements** (for enhancements and general improvements)
+    -**Deprecations** (for removed features)
+    -**Bug Fixes** (for fixed issues)
+    -**Performance Enhancements** (for otimizations)
+
+    Ensure each section is clear and concise, using bullet points and commit references where it is relevant. 
+    If a section does not apply, omit it from the changelog.
+    """
+    
     payload = {
         "model": "claude-3-5-sonnet-latest",
         "messages": [
             {
                 "role": "user",
-                "content": f"Based on the provided git log, generate me a changelog:\n{commits_text}"
+                "content": prompt
             }
         ], 
         "max_tokens": 4096,
