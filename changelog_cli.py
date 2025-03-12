@@ -39,7 +39,9 @@ def generate_changelog(commits):
         response.raise_for_status()
         response_data = response.json()
         print("\nAPI Response Debugging: \n", response_data)
-        return response_data.get("message", "No response from API.")
+        if "content" in response_data and isinstance(response_data["content"], list):
+            changelog_text = "\n".join([item["text"] for item in response_data["content"] if "text" in item])
+            return changelog_text or "No response from API."
     except requests.exceptions.RequestException as e:
         print(F"Error: API request failed. Details: {e}")
         sys.exit(1)
