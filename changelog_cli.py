@@ -2,6 +2,14 @@ import subprocess
 import requests
 import sys
 
+"""
+Changelog CLI Tool
+
+This script fetches recent Git commit messages and generates a structured changelog using the Mintlify API.
+
+To avoid manual copying the file everytime I want to use it, I would convert it to a global CLI tool and creating it as a package.
+"""
+
 API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRhbmllbGh3YW5nMDYyM0BnbWFpbC5jb20iLCJhc3Nlc3NtZW50IjoiYWkiLCJjcmVhdGVkX2F0IjoiMjAyNS0wMy0xMlQxOTowMDo0Ny43ODQ3NTk0MzRaIiwiaWF0IjoxNzQxODA2MDQ3fQ.JbkjSQ-o5BAIJ_40hn-56JNGd00HwqeTrbi_gxBdX_c"
 API_URL = "https://mintlify-take-home.com/api/message"
 
