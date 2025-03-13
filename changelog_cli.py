@@ -16,7 +16,6 @@ To avoid manual copying the file everytime I want to use it, I would convert it 
 API_KEY = os.getenv("GEMINI_API_KEY")
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent"
 
-print(f"Using API Key: {API_KEY[:5]}********")
 
 if not API_KEY:
     print("Error: API key not found. Set GEMINI_API_KEY environment variable.")
@@ -38,7 +37,7 @@ def fetch_git_commits(n):
     """
     try:
         result = subprocess.run(
-            ["git", "log", f"-n {n}", "--pretty=format:%h %s"], capture_output = True, text = True, check = True)
+            ["git", "log", f"-n {n}", "--pretty=format:%h|%s|%ci"], capture_output = True, text = True, check = True)
         commits = result.stdout.strip().split("\n")
         if not commits or commits == [""]:
             print("Warning: No recent commits found.")
@@ -63,21 +62,38 @@ def request_changelog_from_api(commits):
     """
     if not commits:
         return "No commits found."
-    condensed_commits = condense_commits(commits)
-    commits_text = "\n".join(condensed_commits)
-    prompt = f"""Generate a structured changelog based on the following commit messages:
+    formatted_commits = []
+    for commit in commits:
+        parts = commit.split("|")
+        if len(parts) == 3:
+            commit_hash, message, timestamp = parts
+            formatted_commits.append(f"- **{timestamp}** | `{commit_hash}`: {message}")
+    commits_text = "\n".join(formatted_commits)
+    prompt = f"""You are an AI assistant that generates structured changelogs from Git commits.
 
-    {commits_text}:
+    ### **Rules for Formatting the Changelog**
+    1. **Preserve commit order** (oldest first).
+    2. **Include timestamps** for each commit.
+    3. **Format output in Markdown with proper sections**.
 
-    Please format the changelog using Markdown with the following sections:
-    -**New Features** (for new functionality)
-    -**Improvements** (for enhancements and general improvements)
-    -**Deprecations** (for removed features)
-    -**Bug Fixes** (for fixed issues)
-    -**Performance Enhancements** (for otimizations)
+    ### **Commits (Oldest to Newest)**
+    {commits_text}
 
-    Ensure each section is clear and concise, using bullet points and commit references where it is relevant. 
-    If a section does not apply, omit it from the changelog.
+    ### **Generate the Changelog**
+    Use the following structure:
+    - **New Features**
+    - **Improvements**
+    - **Bug Fixes**
+    - **Deprecations**
+    - **Performance Enhancements**
+
+    Each commit should include:
+    - A bullet point (`-`)
+    - The commit **timestamp**
+    - The commit **hash** (formatted as inline code using backticks)
+    - A **clear description**
+
+    If a section does not apply, omit it.
     """
     
     payload = {
