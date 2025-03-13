@@ -10,8 +10,8 @@ This script fetches recent Git commit messages and generates a structured change
 To avoid manual copying the file everytime I want to use it, I would convert it to a global CLI tool and creating it as a package.
 """
 
-API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRhbmllbGh3YW5nMDYyM0BnbWFpbC5jb20iLCJhc3Nlc3NtZW50IjoiYWkiLCJjcmVhdGVkX2F0IjoiMjAyNS0wMy0xMlQxOTowMDo0Ny43ODQ3NTk0MzRaIiwiaWF0IjoxNzQxODA2MDQ3fQ.JbkjSQ-o5BAIJ_40hn-56JNGd00HwqeTrbi_gxBdX_c"
-API_URL = "https://mintlify-take-home.com/api/message"
+API_KEY = "AIzaSyAdbn6bz8j3Atj4oc1qbZ4T4ieNi_yWY0g"
+API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent"
 
 def is_git_repo():
     """
@@ -70,29 +70,26 @@ def request_changelog_from_api(commits):
     Ensure each section is clear and concise, using bullet points and commit references where it is relevant. 
     If a section does not apply, omit it from the changelog.
     """
-
+    
     payload = {
-        "model": "claude-3-5-sonnet-latest",
-        "messages": [
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ], 
-        "max_tokens": 4096,
-        "temperature": 0.5
+        "contents": [
+            {"parts": [{"text": prompt}]}
+        ]
     }
     headers = {
-        "X-API-Key": API_KEY,
         "Content-Type": "application/json"
     }
+    params = {
+        "key": API_KEY
+    }
     try:
-        response = requests.post(API_URL, json = payload, headers = headers)
+        response = requests.post(API_URL, json = payload, headers = headers, params = params)
         response.raise_for_status()
         response_data = response.json()
-        if "content" in response_data and isinstance(response_data["content"], list):
-            changelog_text = "\n".join([item["text"] for item in response_data["content"] if "text" in item])
-            return changelog_text or "No response from API."
+        if "candidates" in response_data and response_data["candidates"]:
+            return response_data["candidates"][0]["content"]["parts"][0]["text"]
+        else:
+            return "No response from API."
     except requests.exceptions.RequestException as e:
         print(F"Error: API request failed. Details: {e}")
         sys.exit(1)
