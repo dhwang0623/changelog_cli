@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+import os
 import subprocess
 import requests
 import sys
@@ -10,8 +13,14 @@ This script fetches recent Git commit messages and generates a structured change
 To avoid manual copying the file everytime I want to use it, I would convert it to a global CLI tool and creating it as a package.
 """
 
-API_KEY = "AIzaSyAdbn6bz8j3Atj4oc1qbZ4T4ieNi_yWY0g"
+API_KEY = os.getenv("GEMINI_API_KEY")
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent"
+
+print(f"Using API Key: {API_KEY[:5]}********")
+
+if not API_KEY:
+    print("Error: API key not found. Set GEMINI_API_KEY environment variable.")
+    sys.exit(1)
 
 def is_git_repo():
     """
